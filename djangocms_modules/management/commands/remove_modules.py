@@ -46,13 +46,6 @@ class Command(BaseCommand):
             action='store_true',
             help='Skip confirmation prompts',
         )
-        parser.add_argument(
-            '--verbosity',
-            type=int,
-            choices=[0, 1, 2],
-            default=1,
-            help='Verbosity level; 0=minimal output, 1=normal output, 2=verbose output',
-        )
 
     def handle(self, *args, **options):
         dry_run = options['dry_run']
