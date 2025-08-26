@@ -72,7 +72,7 @@ class Command(BaseCommand):
             for module_plugin in module_plugins:
                 # Get all descendants (child plugins) of this module
                 # Using get_tree to get all descendants, excluding the root plugin itself
-                tree = module_plugin.get_tree()
+                tree = module_plugin.get_tree(module_plugin)
                 descendants = tree.exclude(pk=module_plugin.pk)
                 all_child_plugins.extend(descendants)
 
@@ -117,7 +117,7 @@ class Command(BaseCommand):
             if verbosity >= 2:
                 self.stdout.write('Detailed breakdown:')
                 for module_plugin in module_plugins:
-                    tree = module_plugin.get_tree()
+                    tree = module_plugin.get_tree(module_plugin)
                     descendants = tree.exclude(pk=module_plugin.pk)
                     self.stdout.write(
                         f'  Module "{module_plugin.module_name}" (ID: {module_plugin.pk}) '
@@ -168,7 +168,7 @@ class Command(BaseCommand):
         # Delete each module plugin (which will cascade to children)
         for module_plugin in module_plugins:
             # Count children before deletion
-            tree = module_plugin.get_tree()
+            tree = module_plugin.get_tree(module_plugin)
             descendants = tree.exclude(pk=module_plugin.pk)
             child_count = len(descendants)
 
