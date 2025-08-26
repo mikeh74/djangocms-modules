@@ -13,7 +13,7 @@ python manage.py remove_modules [options]
 - `--dry-run`: Show what would be deleted without actually deleting anything
 - `--remove-categories`: Also remove empty categories after removing modules
 - `--force`: Skip confirmation prompts (useful for automated scripts)
-- `--verbosity {0,1,2}`: Control output level (0=minimal, 1=normal, 2=verbose)
+- `--verbosity {0,1,2,3}`: Control output level (0=minimal, 1=normal, 2=verbose, 3=very verbose)
 
 ## Examples
 
