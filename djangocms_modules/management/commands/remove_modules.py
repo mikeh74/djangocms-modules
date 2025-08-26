@@ -1,9 +1,30 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-from django.utils.text import pluralize
 
 from cms.models import CMSPlugin
 from djangocms_modules.models import Category, ModulePlugin
+
+
+def pluralize(value, arg='s'):
+    """
+    Local replacement for Django's removed pluralize function.
+    Returns the plural suffix for a given value.
+
+    Args:
+        value: The count/value to check for pluralization
+        arg: Either 's' (default) or 'singular,plural' format
+
+    Returns:
+        Empty string if value is 1, otherwise the appropriate suffix
+    """
+    if value == 1:
+        return ''
+
+    if ',' in arg:
+        singular, plural = arg.split(',', 1)
+        return plural
+
+    return arg
 
 
 class Command(BaseCommand):
@@ -69,12 +90,12 @@ class Command(BaseCommand):
             if verbosity >= 1:
                 self.stdout.write(
                     self.style.WARNING(f'Found {module_count} Module plugin{pluralize(module_count)} '
-                                    f'with {child_plugin_count} child plugin{pluralize(child_plugin_count)}')
+                                       f'with {child_plugin_count} child plugin{pluralize(child_plugin_count)}')
                 )
                 if remove_categories:
                     self.stdout.write(
                         self.style.WARNING(f'Found {category_count} categor{pluralize(category_count, "y,ies")} '
-                                        f'that will be removed')
+                                           f'that will be removed')
                     )
 
             if dry_run:
@@ -117,7 +138,7 @@ class Command(BaseCommand):
                         deleted_counts = self._delete_plugins(
                             module_plugins, remove_categories, verbosity
                         )
-                        
+
                         if verbosity >= 1:
                             self.stdout.write(
                                 self.style.SUCCESS(
@@ -157,16 +178,16 @@ class Command(BaseCommand):
             tree = module_plugin.get_tree()
             descendants = tree.exclude(pk=module_plugin.pk)
             child_count = len(descendants)
-            
+
             if verbosity >= 2:
                 self.stdout.write(
                     f'Deleting Module "{module_plugin.module_name}" '
                     f'and {child_count} child plugin{pluralize(child_count)}...'
                 )
-            
+
             # Delete the module plugin (this will cascade to children due to CMSPlugin tree structure)
             module_plugin.delete()
-            
+
             deleted_counts['modules'] += 1
             deleted_counts['children'] += child_count
 
@@ -184,7 +205,7 @@ class Command(BaseCommand):
                 )
                 if plugins_count == 0:
                     empty_categories.append(category)
-            
+
             for category in empty_categories:
                 if verbosity >= 2:
                     self.stdout.write(f'Deleting empty category "{category.name}"...')
